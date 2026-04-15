@@ -13,6 +13,8 @@ from langserve import add_routes
 from pydantic import BaseModel, Field
 from starlette.staticfiles import StaticFiles
 
+from app.config.env import env
+
 app = FastAPI(
     docs_url=None,  # 禁用默认 Swagger
     redoc_url=None,  # 禁用默认 ReDoc
@@ -90,4 +92,4 @@ add_routes(app=app, runnable=model, path="/doubao")
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="localhost", port=env.server_port)
