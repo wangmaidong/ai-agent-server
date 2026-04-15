@@ -13,7 +13,11 @@ from langserve import add_routes
 from pydantic import BaseModel, Field
 from starlette.staticfiles import StaticFiles
 
+# 引入环境配置文件
 from app.config.env import env
+# 引入获取本机ip的方法
+from app.utils.get_local_ips import get_local_ips
+
 
 app = FastAPI(
     docs_url=None,  # 禁用默认 Swagger
@@ -92,4 +96,18 @@ add_routes(app=app, runnable=model, path="/doubao")
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="localhost", port=env.server_port)
+    # 获取环境变量中的端口号
+    port = int(env.server_port)
+    # 打印所有可用的访问地址
+    print("\n服务已启动，以下是可用的访问地址：")
+    print(f" - 本地访问: http://127.0.0.1:{port}")
+
+    for ip in get_local_ips():
+      print(f" - 网络访问: http://{ip}:{port}")
+
+    print("\n")  # 空行美化输出
+    # 启动Uvicorn服务器
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    # uvicorn.run之后的代码永远都不会执行
+    # 使用FastAPI的 @app.on_event("startup")装饰器可以在服务器成功启动后执行代码
+    print('App is running...(Never Callable)')
