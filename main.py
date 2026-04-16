@@ -1,5 +1,7 @@
 import logging
 from typing import List, Union
+from contextlib import asynccontextmanager
+import datetime
 
 from fastapi import FastAPI
 from fastapi.openapi.docs import get_swagger_ui_oauth2_redirect_html, get_redoc_html, get_swagger_ui_html
@@ -17,9 +19,17 @@ from starlette.staticfiles import StaticFiles
 from app.config.env import env
 # 引入获取本机ip的方法
 from app.utils.get_local_ips import get_local_ips
+# 引入大模型创建方法
+from app.utils.llm_utils import create_llm
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+  print(f"应用启动：{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+  yield
+  print(f"应用销毁：{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 app = FastAPI(
+    lifespan=lifespan,
     docs_url=None,  # 禁用默认 Swagger
     redoc_url=None,  # 禁用默认 ReDoc
 )
@@ -80,18 +90,20 @@ async def redirect_root_to_docs():
     """
     return RedirectResponse("/docs")
 
-# @app.get("/chat")
-# async def chat():
-model = init_chat_model(
-    model="doubao-1-5-pro-32k-250115",  # 你的模型名
-    model_provider="openai",  # 必须填 openai（兼容协议）
-    base_url="https://ark.cn-beijing.volces.com/api/v3/",  # 你的自定义 API URL
-    api_key="e65b2b55-a28e-40cd-9b32-493cef36e248",  # 本地模型随便填
-    temperature=0.7,
-    streaming=False
-)
+@app.get("/chat")
+async def chat():
+  model_qwen = create_llm(platform_code='bailian-qwen-turbo')
+  model_qwen_output = model_qwen.invoke("你好，你是谁").content
+  print(f"model_qwen output: {model_qwen_output}")
 
-add_routes(app=app, runnable=model, path="/doubao")
+  model_doubao = create_llm(platform_code='huoshan-doubao')
+  model_doubao_output = model_doubao.invoke("你好，你是谁").content
+  print(f"model_doubao output: {model_doubao_output}")
+
+  return {
+    "model_qwen_output": model_qwen_output,
+    "model_doubao_output": model_doubao_output
+  }
 
 if __name__ == "__main__":
     import uvicorn
