@@ -21,6 +21,9 @@ from app.config.env import env
 from app.utils.get_local_ips import get_local_ips
 # 引入大模型创建方法
 from app.utils.llm_utils import create_llm
+# 引入graph自定义工作流
+from app.controller.add_graph_proxy_route import add_graph_proxy_route
+from app.controller.add_custom_stream_route import add_custom_stream_route
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -104,6 +107,9 @@ async def chat():
     "model_qwen_output": model_qwen_output,
     "model_doubao_output": model_doubao_output
   }
+
+add_graph_proxy_route(app)
+add_custom_stream_route(app)
 
 if __name__ == "__main__":
     import uvicorn
