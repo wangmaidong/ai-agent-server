@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.openapi.docs import get_swagger_ui_oauth2_redirect_html, get_redoc_html, get_swagger_ui_html
 from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from langchain.chat_models import init_chat_model
 from langserve import add_routes
 from starlette.staticfiles import StaticFiles
@@ -31,5 +32,15 @@ app = FastAPI(
 
 for add_route_func in routes:
   add_route_func(app)
+
+if env.server_enable_cors:
+  app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+  )
 
 print("/*---------------------------------------main-------------------------------------------*/")

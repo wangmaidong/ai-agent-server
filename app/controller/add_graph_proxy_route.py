@@ -29,6 +29,7 @@ def add_graph_proxy_route(app: FastAPI):
     runnable=create_graph(),
     path="/graph_proxy",
     per_req_config_modifier=PER_REQ_CONFIG_MODIFIER,
+    enabled_endpoints=["invoke", "batch", "config_hashes"]
   )
 
 

@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from pydantic import Field
+from tomlkit.items import Bool
 
 
 class EnvSettings(BaseSettings):
@@ -9,7 +10,7 @@ class EnvSettings(BaseSettings):
   llm_key_deepseek: str = Field(..., env="LLM_KEY_DEEPSEEK")
 
   server_port: int = Field(..., env="SERVER_PORT")
-
+  server_enable_cors: bool = Field(..., env="SERVER_ENABLE_CORS")
   class Config:
     env_file = ".env"
     env_file_encoding = "utf-8"
