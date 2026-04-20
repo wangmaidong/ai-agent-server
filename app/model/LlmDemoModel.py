@@ -4,32 +4,21 @@ from decimal import Decimal
 from typing import List
 
 from fastapi import FastAPI, APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlmodel import SQLModel, Field, select
 
+from app.utils.model_utils import to_camel, format_datetime_to_string, format_date_to_string, FormattedDatetime, FormattedDate, current_datetime, FormattedDecimal, to_dict, to_obj
 from app.utils.mysql_utils import AsyncSessionDep
+from app.model.BasicModel import BasicModel
 
-# 定义北京时区（UTC+8）
-beijing_timezone = timezone(timedelta(hours=8))
-
-# 定义获取当前北京时区时间的匿名函数，用于默认值生成
-current_datetime = lambda: datetime.now(beijing_timezone)
-
-
-class LlmDemoModel(SQLModel, table=True):
+class LlmDemoModel(BasicModel, table=True):
   __tablename__ = "llm_demo"
 
-  id: str = Field(default=None, primary_key=True, description="唯一标识，编号")
-  created_at: datetime = Field(default_factory=current_datetime, description="创建时间")
-  updated_at: datetime = Field(default_factory=current_datetime, description="更新时间")
-  created_by: str | None = Field(default=None, description="创建人id")
-  updated_by: str | None = Field(default=None, description="更新人id")
-
-  full_name: str = Field(default=None, description="用户名称")
-  datetime_start: datetime = Field(default=None, description="开通会员时间")
-  datetime_end: datetime = Field(default=None, description="会员截止到期时间")
-  birthday: date = Field(default=None, description="生日")
-  amount: Decimal = Field(default=0, description="金额")
+  full_name: str | None = Field(default=None, description="用户名称")
+  datetime_start: FormattedDatetime | None = Field(default=None, description="开通会员时间")
+  datetime_end: FormattedDatetime | None = Field(default=None, description="会员截止到期时间")
+  birthday: FormattedDate | None = Field(default=None, description="生日")
+  amount: FormattedDecimal | None = Field(default=Decimal(0), description="金额")
 
 
 def add_llm_demo_route(app: FastAPI):
@@ -117,3 +106,4 @@ def add_llm_demo_route(app: FastAPI):
 class ModelQuerySchema(BaseModel):
   page: int = Field(default=0, description="页码")
   page_size: int = Field(default=5, description="每页数量")
+
