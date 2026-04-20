@@ -17,6 +17,9 @@ class EnvSettings(BaseSettings):
 
   server_port: int = Field(..., env="SERVER_PORT")
   server_enable_cors: bool = Field(..., env="SERVER_ENABLE_CORS")
+
+  server_file_save_path: str = Field(..., env='SERVER_FILE_SAVE_PATH')
+  server_file_public_path: str = Field(..., env='SERVER_FILE_PUBLIC_PATH')
   # class Config:
   #   env_file = ".env"
   #   env_file_encoding = "utf-8"

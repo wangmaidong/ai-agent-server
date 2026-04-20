@@ -20,6 +20,8 @@ psutil = "7.0.0"
 asyncmy = "0.2.10"
 sqlmodel = "0.0.24"
 greenlet = "3.2.3"
+python-multipart = "0.0.20"
+aiofiles = "24.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
