@@ -75,7 +75,7 @@ def add_model_routes(app: FastAPI, clazz: type[BasicModel], route_prefix: str):
       new_obj.id = str(uuid.uuid4())
     session.add(new_obj)
     await session.commit()
-    return new_obj
+    return {"result": new_obj}
 
   @router.post('/update')
   async def _update(body: UpdateBodySchema, session: AsyncSessionDep):
@@ -100,7 +100,7 @@ def add_model_routes(app: FastAPI, clazz: type[BasicModel], route_prefix: str):
       setattr(query_cls, field, value)
     session.add(query_cls)
     await session.commit()
-    return query_cls
+    return {"result": query_cls}
 
   @router.post('/delete')
   async def _delete(body: clazz, session: AsyncSessionDep):

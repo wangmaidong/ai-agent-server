@@ -11,6 +11,8 @@ from app.model.LlmDemoModel import LlmDemoModel
 from app.model.ResumeTemplateModel import ResumeTemplateModel
 from app.model.ResumeUserModel import ResumeUserModel
 from app.utils.add_proxy_routes import add_proxy_routes
+from app.model.ResumeUserVueModel import ResumeUserVueModel
+from app.model.ResumeTemplateVueModel import ResumeTemplateVueModel
 # /*@formatter:off*/
 routes = [
   add_docs_route,               # 代理文档静态资源
@@ -25,5 +27,7 @@ routes = [
   lambda app: add_proxy_routes(app, 'huoshan-doubao'),
   lambda app: add_proxy_routes(app, 'huoshan-doubao-vision'),
   lambda app: add_proxy_routes(app, 'bailian-qwen3.6-plus'),
+  lambda app: add_model_routes(app,ResumeTemplateVueModel,'/llm_resume_template_vue'),# 简历模板
+  lambda app: add_model_routes(app,ResumeUserVueModel,'/llm_resume_user_vue'),      # 用户简历
 ]
 # /*@formatter:on*/
