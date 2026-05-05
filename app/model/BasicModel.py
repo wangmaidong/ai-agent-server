@@ -1,5 +1,6 @@
+import json
 from datetime import datetime, date
-from datetime import datetime, date
+from typing import Any, Self
 
 from pydantic import ConfigDict
 from sqlmodel import SQLModel, Field
@@ -24,3 +25,30 @@ class BasicModel(SQLModel):
   updated_at: FormattedDatetime | None = Field(default_factory=current_datetime, description="更新时间")
   created_by: str | None = Field(default=None, description="创建人id")
   updated_by: str | None = Field(default=None, description="更新人id")
+
+  def to_dict(self, **kwargs) -> dict[str, Any]:
+    """
+    将当前实例转换为字典。
+    默认开启 by_alias=True (转为小驼峰)
+    """
+    return json.loads(self.model_dump_json(by_alias=True, **kwargs))
+
+  @classmethod
+  def to_obj(cls, data: dict[str, Any]) -> Self:
+    """
+    将字典转换为当前类的实例对象。
+    """
+    return cls.model_validate(data)
+
+
+if __name__ == "__main__":
+  item_obj = BasicModel(id="1", created_at=datetime.now(), updated_at=datetime.now())
+  print(item_obj)
+  item_dict = item_obj.to_dict()
+  if not isinstance(item_dict, dict):
+    raise Exception(f"to_dict() 返回值类型错误，当前值类型为 {type(item_dict)}")
+  print(f"item_dict: {item_dict}")
+  new_obj = BasicModel.to_obj(item_dict)
+  if not isinstance(new_obj, BasicModel):
+    raise Exception(f"to_obj() 错误，当前值类型为 {type(new_obj)}")
+  print(f"new_obj: {new_obj}")

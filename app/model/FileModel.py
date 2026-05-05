@@ -101,7 +101,7 @@ async def async_save_file(
     "path": file_public_path,
     **file_record,
   }
-  new_file_obj = to_obj(FileModel, file_dict)
+  new_file_obj = FileModel.to_obj(file_dict)
   session.add(new_file_obj)
   await session.commit()
   return new_file_obj
