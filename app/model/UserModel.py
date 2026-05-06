@@ -5,6 +5,9 @@ from sqlmodel import Field
 
 from app.model.BasicModel import BasicModel
 
+# 引入redis缓存
+from app.utils.redis_cache import RedisCache
+
 # 用户账号状态，为Y表示账号已经激活，为N表示账号未激活
 class UserValidStatus(str, Enum):
   Y = "Y"
@@ -34,3 +37,21 @@ class RegistryUserSchema(PublicUser):
   用户注册的请求参数类型
   """
   password: str = Field(..., description="明文密码")
+
+user_cache = RedisCache(
+  cache_key="user",
+  clazz=PrivateUserModel,
+  clazz_attr=PrivateUserModel.username
+)
+
+if __name__ == "__main__":
+  async def main():
+    result = await asyncio.gather(
+      asyncio.create_task(user_cache.get_cache("zhangsan")),
+      asyncio.create_task(user_cache.get_cache("zhangsan")),
+      asyncio.create_task(user_cache.get_cache("zhangsan")),
+    )
+    for item in result:
+      print(item)
+
+  asyncio.run(main())
