@@ -1,0 +1,29 @@
+/                                      # 访问根节点的时候，开放swagger 访问界面
+/redoc                                 # 访问redoc的时候，开放redoc 访问界面
+/docs                                  # 访问 docs 的时候，开放 docs 访问界面
+/static/swagger-ui.min.css             # 访问swagger的时候，开放swagger的 css文件
+/static/swagger-ui-bundle.min.js       # 访问swagger的时候，开放swagger 的 js文件
+/openapi.json                          # 访问 openapi.json 的时候，开放 openapi.json 文件
+/static/redoc.standalone.js            # 访问redoc的时候，开放redoc 的 js文件
+
+/sys_conf                              # 获取系统参数
+/token                                 # 登录接口，同/login
+/login                                 # 登录接口
+/refresh                               # 刷新 token
+/registry                              # 注册接口
+/verify                                # 验证接口
+
+/wx/config/login                       # 微信登录接口
+/wx/login_state                        # 获取微信登录状态
+/wx/notify/login                       # 微信登录回调
+/wx/notify/bound                       # 微信绑定回调
+/sms/send                              # 发送短信
+/sms/login                             # 短信登录接口
+
+/wepay/notify                          # 微信支付回调
+/alipay/notify                         # 支付宝支付回调
+
+/async_delay                           # 测试接口
+/langgraph/setup                       # LangGraph初始化接口
+/general/digital_interview_bank/list   # 开放查询题库接口
+/general/test/*                        # 测试通配符
