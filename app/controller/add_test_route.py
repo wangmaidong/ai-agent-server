@@ -20,6 +20,9 @@ def add_test_route(app: FastAPI):
       "model_qwen_output": model_qwen_output,
       "model_doubao_output": model_doubao_output
     }
+  @app.get("/test")
+  def test_api():
+    return "Hello World"
 
   # Edit this to add the chain you want to add
   # add_routes(app, NotImplemented)
