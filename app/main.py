@@ -16,6 +16,9 @@ from app.routes import routes
 # 测试mysql链接服务是否正常
 from app.utils.mysql_utils import check_database_connection
 
+# 注册中间件
+from app.middlewares.middlewares import middlewares
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,8 +35,13 @@ app = FastAPI(
   redoc_url=None,  # 禁用默认 ReDoc
 )
 
+# 注册接口路由
 for add_route_func in routes:
   add_route_func(app)
+
+#  注册中间件
+for add_middleware_func in middlewares:
+  add_middleware_func(app)
 
 if env.server_enable_cors:
   app.add_middleware(
