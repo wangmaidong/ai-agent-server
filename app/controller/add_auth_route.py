@@ -156,11 +156,11 @@ def add_auth_route(app: FastAPI):
       "access_expires": access_expires,
     }
 
-  oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
   # 获取用户信息接口
   @app.get("/users/me")
-  async def _me(request: Request, token: Annotated[str, Depends(oauth2_scheme)], session: AsyncSessionDep):
+  async def _me(request: Request, session: AsyncSessionDep):
+    token = request.state.token
     token_info: TokenInfo | None = crypt_utils.jwt_decode(token)
     if not token_info:
       raise HTTPException(
