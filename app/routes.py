@@ -14,6 +14,7 @@ from app.utils.add_proxy_routes import add_proxy_routes
 from app.model.ResumeUserVueModel import ResumeUserVueModel
 from app.model.ResumeTemplateVueModel import ResumeTemplateVueModel
 from app.controller.add_auth_route import add_auth_route
+from app.controller.add_concurrent_route import add_concurrent_route
 # /*@formatter:off*/
 routes = [
   add_docs_route,               # 代理文档静态资源
@@ -23,6 +24,7 @@ routes = [
   add_next_id_route,            # 生成ID接口
   add_file_route,               # 文件上传接口
   add_auth_route,               # 用户认证相关接口
+  add_concurrent_route,
   lambda app: add_model_routes(app,LlmDemoModel,'/llm_demo'),                     # LlmDemo 测试用户模块,
   lambda app: add_model_routes(app,ResumeTemplateModel,'/llm_resume_template'),   # 简历模板
   lambda app: add_model_routes(app,ResumeUserModel,'/llm_resume_user'),           # 用户简历
