@@ -1,7 +1,9 @@
 import datetime
 from contextlib import asynccontextmanager
+from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI,Depends
+from fastapi.security import  OAuth2PasswordBearer
 from fastapi.openapi.docs import get_swagger_ui_oauth2_redirect_html, get_redoc_html, get_swagger_ui_html
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,10 +31,16 @@ async def lifespan(app: FastAPI):
   await async_engine.dispose()
 
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
+
+async def optional_oauth2(token: Optional[str] = Depends(oauth2_scheme)):
+  return token
+
 app = FastAPI(
   lifespan=lifespan,
   docs_url=None,  # 禁用默认 Swagger
   redoc_url=None,  # 禁用默认 ReDoc
+  dependencies=[Depends(optional_oauth2)],
 )
 
 # 注册接口路由
