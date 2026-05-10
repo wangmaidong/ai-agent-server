@@ -19,3 +19,4 @@ class LlmDemoModel(BasicModel, table=True):
   datetime_end: FormattedDatetime | None = Field(default=None, description="会员截止到期时间")
   birthday: FormattedDate | None = Field(default=None, description="生日")
   amount: FormattedDecimal | None = Field(default=Decimal(0), description="金额")
+  version: int = Field(default=0, description="行记录版本号")
