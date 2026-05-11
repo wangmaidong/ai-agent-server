@@ -1,9 +1,10 @@
 import asyncio
 from enum import Enum
 
-from sqlmodel import Field
+from sqlmodel import Field,Relationship
 
 from app.model.BasicModel import BasicModel
+from app.model.ProjectModel import ProjectModel
 
 # 引入redis缓存
 from app.utils.redis_cache import RedisCache
@@ -30,6 +31,8 @@ class PrivateUserModel(PublicUser, table=True):
   """
   __tablename__ = "pl_user"
   hash_password: str = Field(..., description="经过哈希转换的密码")
+  # 定义用户关联的项目列表
+  projects: list["ProjectModel"] = Relationship(back_populates="leader")
 
 
 class RegistryUserSchema(PublicUser):
