@@ -1,15 +1,31 @@
 # tests/conftest.py
-import pytest
-from fastapi.testclient import TestClient
-from httpx import AsyncClient
+import asyncio
+import datetime
 
+import pytest
+from httpx import AsyncClient, ASGITransport
+
+from app.auth.token_utils import token_utils
 from app.config.env import env
+from app.main import app
 from app.utils.mysql_utils import async_session
+from app.utils.redis_utils import RedisUtils
 
 
 @pytest.fixture(scope="function")
 async def client():
-  async with AsyncClient(base_url=f"http://localhost:{env.server_port}") as ac:
+  access_token = token_utils.create_token(
+    username="lisi",
+    token_type="access",
+    expires_delta=datetime.timedelta(days=1),
+  )
+  async with AsyncClient(
+    transport=ASGITransport(app=app),
+    base_url="http://test",
+    headers={
+      "Authorization": f"Bearer {access_token}",
+    }
+  ) as ac:
     yield ac
 
 

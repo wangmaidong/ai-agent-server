@@ -4,7 +4,6 @@ from enum import Enum
 from sqlmodel import Field,Relationship
 
 from app.model.BasicModel import BasicModel
-from app.model.ProjectModel import ProjectModel
 
 # 引入redis缓存
 from app.utils.redis_cache import RedisCache
