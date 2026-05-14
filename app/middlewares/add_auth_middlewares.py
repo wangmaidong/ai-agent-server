@@ -56,6 +56,12 @@ def add_auth_middlewares(app: FastAPI):
           detail="invalid token type!",
           status_code=status.HTTP_401_UNAUTHORIZED,
         )
+    # 普通认证接口仅允许用access令牌
+    elif token_info['token_type'] != 'access':
+        raise HTTPException(
+          detail="invalid token type!",
+          status_code=status.HTTP_401_UNAUTHORIZED,
+        )
 
     private_user_dict: dict | None = await user_cache.get_cache(token_info['username'])
     if not private_user_dict or private_user_dict.get('valid') != 'Y':
