@@ -1,4 +1,3 @@
-import asyncio
 import json
 from typing import Any, Optional
 
@@ -142,3 +141,36 @@ class RedisCache:
     async with redis_utils.get_redis_connection() as redis_client:
       value = await self.get_from_mysql(item_key)
       return await self.save_cache(key, redis_client, value)
+
+  # 根据item_key数组删除缓存
+  async def remove_cache(self, item_key: str | list[str]):
+    """
+    根据缓存 key 将缓存标记为不存在（设置为 CACHE_VALUE_NULL）
+
+    :param item_key: 缓存的 key 值（如 code 或 username），可以是单个字符串或字符串数组
+    """
+    keys = []
+    if isinstance(item_key, list):
+      keys = [self.cache_key + ":" + k for k in item_key]
+    else:
+      keys = [self.cache_key + ":" + item_key]
+
+    async with redis_utils.get_redis_connection() as redis_client:
+      for key in keys:
+        await redis_client.set(key, CACHE_VALUE_NULL, ex=self.null_ttl)
+
+  # 根据item ids数组删除缓存
+  async def remove_cache_by_id(self, id: str | list[str]):
+    async with async_session() as session:
+      item_ids = id if isinstance(id, list) else [id]
+      query = select(self.clazz).where(self.clazz.id.in_(item_ids))
+      result = await session.execute(query)
+      objs = result.scalars().all()
+
+      # 获取属性名
+      attr_name = self.clazz_attr.key
+      item_keys_to_delete = [getattr(obj, attr_name) for obj in objs if obj and getattr(obj, attr_name, None)]
+
+      if item_keys_to_delete:
+        # 在删除前就清除缓存
+        await self.remove_cache(item_keys_to_delete)

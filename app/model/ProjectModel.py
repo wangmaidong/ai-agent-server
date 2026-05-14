@@ -9,7 +9,6 @@ from app.model.BasicModel import BasicModel
 from app.utils.model_utils import FormattedDecimal
 from app.utils.mysql_utils import async_session
 
-
 class ProjectModel(BasicModel, table=True):
   __tablename__ = "pl_project"
 

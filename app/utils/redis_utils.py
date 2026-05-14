@@ -6,6 +6,7 @@ import redis.asyncio as redis
 from fastapi.logger import logger
 
 from app.config.env import env
+from app.utils.is_pytesting import is_pytesting
 
 
 class RedisUtils():
@@ -16,32 +17,40 @@ class RedisUtils():
     redis_password: str,
     redis_db: int
   ):
-    """初始化连接池并执行读写测试"""
-    self.redis_pool = redis.ConnectionPool(
-      host=redis_host,
-      port=redis_port,
-      password=redis_password,
-      db=redis_db,
-      encoding="utf-8",
-      decode_responses=True,
+    self.redis_config = {
+      "host": redis_host,
+      "port": redis_port,
+      "password": redis_password,
+      "db": redis_db,
+      "encoding": "utf-8",
+      # /*@formatter:off*/
+      "decode_responses": True,    # 自动解码响应结果
+      "health_check_interval": 5,  # 每5秒自动发送PING，保持连接活跃
+      "socket_keepalive": True,    # 启用TCP层面的保活探测
+      "socket_connect_timeout": 3, # 连接超时设置
+      "retry_on_timeout": True,    # 遇到超时自动重试一次
+      # /*@formatter:on*/
+    }
+    self.redis_pool = None if is_pytesting() else redis.ConnectionPool(**self.redis_config)
 
-      health_check_interval=5,  # 每5秒自动发送PING，保持连接活跃
-      socket_keepalive=True,  # 启用TCP层面的保活探测
-      socket_connect_timeout=3,  # 连接超时设置
-      retry_on_timeout=True,  # 遇到超时自动重试一次
-    )
-
-  # 2. 获取连接：利用连接池自动管理，无需手动关闭 client
   @asynccontextmanager
   async def get_redis_connection(self) -> AsyncContextManager[redis.Redis]:
     # 异步连接池中，Redis 实例创建很轻量
     # 上下文管理器结束后，它会自动将连接归还给 pool，而不是物理断开
-    redis_client = redis.Redis(connection_pool=self.redis_pool)
+    if not is_pytesting():
+      redis_client = redis.Redis(connection_pool=self.redis_pool)
+    else:
+      redis_client = redis.Redis(**self.redis_config, single_connection_client=True)
+
     try:
       yield redis_client
     except Exception as e:
       logger.error(f"Redis Connection Error: {e}")
       raise e
+    finally:
+      # 测试环境下：由于是单连接，aclose 会彻底关闭它，不留隐患
+      # 生产环境下：aclose 仅将连接还回 pool，不关闭 pool
+      await redis_client.close()
 
   async def check_redis_connection(self):
     # 立即对redis做一次读写测试
@@ -64,7 +73,7 @@ class RedisUtils():
   # 3. 清理连接池
   async def close_redis_connection(self):
     if self.redis_pool:
-      self.redis_pool.disconnect()
+      await self.redis_pool.disconnect()
       print("🚀 Redis connection pool closed.")
 
 
