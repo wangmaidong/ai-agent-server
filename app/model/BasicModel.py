@@ -8,7 +8,7 @@ from sqlmodel import SQLModel, Field
 from app.utils.model_utils import to_camel, format_datetime_to_string, format_date_to_string, FormattedDatetime, current_datetime
 
 
-class BasicModel(SQLModel):
+class BasicSchema(SQLModel):
   # Pydantic V2 的模型配置
   model_config = ConfigDict(
     alias_generator=to_camel,  # 使用 to_camel 函数生成别名
@@ -19,12 +19,6 @@ class BasicModel(SQLModel):
       date: format_date_to_string  # 为 date 类型指定自定义的 JSON 编码器
     }
   )
-
-  id: str | None = Field(default=None, primary_key=True, description="唯一标识，编号")
-  created_at: FormattedDatetime | None = Field(default_factory=current_datetime, description="创建时间")
-  updated_at: FormattedDatetime | None = Field(default_factory=current_datetime, description="更新时间")
-  created_by: str | None = Field(default=None, description="创建人id")
-  updated_by: str | None = Field(default=None, description="更新人id")
 
   def to_dict(self, **kwargs) -> dict[str, Any]:
     """
@@ -39,6 +33,14 @@ class BasicModel(SQLModel):
     将字典转换为当前类的实例对象。
     """
     return cls.model_validate(data)
+
+
+class BasicModel(BasicSchema):
+  id: str | None = Field(default=None, primary_key=True, description="唯一标识，编号")
+  created_at: FormattedDatetime | None = Field(default_factory=current_datetime, description="创建时间")
+  updated_at: FormattedDatetime | None = Field(default_factory=current_datetime, description="更新时间")
+  created_by: str | None = Field(default=None, description="创建人id")
+  updated_by: str | None = Field(default=None, description="更新人id")
 
 
 if __name__ == "__main__":
