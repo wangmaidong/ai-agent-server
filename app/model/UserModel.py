@@ -31,7 +31,7 @@ class PrivateUserModel(PublicUser, table=True):
   __tablename__ = "pl_user"
   hash_password: str = Field(..., description="经过哈希转换的密码")
   # 定义用户关联的项目列表
-  projects: list["ProjectModel"] = Relationship(back_populates="leader")
+  # projects: list["ProjectModel"] = Relationship(back_populates="leader")
 
 
 class RegistryUserSchema(PublicUser):
