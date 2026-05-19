@@ -30,3 +30,8 @@ def build_delete_sql(module_config: BatisModuleConfig, delete_body: BatisDeleteB
   # 替换占位符为MySQL格式
   sql = sql.replace("?", "%s")
   return sql, values
+
+if __name__ == "__main__":
+  from app.batis.batis_utils.DEMO_MODULE_CONFIG import DEMO_MODULE_CONFIG
+  ids_dict = {"id": ["123", "3456"] }
+  build_delete_sql(DEMO_MODULE_CONFIG, BatisDeleteBody.to_obj(ids_dict) )

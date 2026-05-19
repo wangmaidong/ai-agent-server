@@ -313,3 +313,17 @@ class FilterHandler:
     "time": _handle_time,
     "datetime": _handle_datetime,
   }
+
+if __name__ == "__main__":
+  from app.batis.batis_utils.DEMO_MODULE_CONFIG import DEMO_MODULE_CONFIG
+  filters_dict = {
+    "page": 0,
+    "page_size": 10,
+    "filters": [
+      { "id": "f1", "field": "normalText", "operator": "=", "value": "active" },
+      { "id": "f2", "field": "createdAt", "operator": ">=", "value": "2024-01-01", "type": "date"},
+    ],
+    "filter_expression": "f1 and f2",
+    "orders": [{ "field": "normalText", "desc": "true" }]
+  }
+  build_query_sql(DEMO_MODULE_CONFIG, BatisQueryBody.to_obj(filters_dict))

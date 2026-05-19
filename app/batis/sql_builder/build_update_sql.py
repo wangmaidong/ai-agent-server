@@ -6,6 +6,7 @@ from app.batis.batis_utils.sql_utils import get_value, log_sql, get_value_sql
 from app.batis.batis_utils.batis_scheme import BatisModuleConfig, BatisUpdateBody
 from app.batis.batis_utils.BatisColumnFormatter import BatisColumnFormatter
 
+
 # 更新时排除的字段（这些字段不允许在UPDATE操作中被修改）
 UPDATE_EXCLUDE_FIELDS = ["id", "createdAt", "createdBy"]
 
@@ -71,3 +72,13 @@ def build_update_sql(module_config: BatisModuleConfig, update_body: BatisUpdateB
     sql = sql.replace("?", "%s")
     # 返回最终的SQL语句和参数值列表
     return sql, values
+
+if __name__ == "__main__":
+  from app.batis.batis_utils.DEMO_MODULE_CONFIG import DEMO_MODULE_CONFIG
+  update_dict = {
+    "row": {"normalText": "abc", "numberVal": 213, "id": "12345"},
+    "update_fields": [
+      "normalText"
+    ]
+  }
+  build_update_sql(DEMO_MODULE_CONFIG, BatisUpdateBody.to_obj(update_dict))
