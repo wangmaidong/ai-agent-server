@@ -21,6 +21,9 @@ from app.utils.mysql_utils import check_database_connection
 # 注册中间件
 from app.middlewares.middlewares import middlewares
 
+# 引入拦截器
+from app.interceptors.interceptors import interceptors
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -50,6 +53,10 @@ for add_route_func in routes:
 #  注册中间件
 for add_middleware_func in middlewares:
   add_middleware_func(app)
+
+# 注册拦截器
+for add_interceptor_func in interceptors:
+  add_interceptor_func()
 
 if env.server_enable_cors:
   app.add_middleware(
